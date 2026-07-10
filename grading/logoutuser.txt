@@ -1,0 +1,2 @@
+theia@theia-anilhaksever:/home/project$ curl -X GET "https://anilhaksever-8000.theianext-0-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai/djangoapp/logout"
+{"userName": ""}

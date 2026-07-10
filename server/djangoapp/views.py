@@ -1,19 +1,19 @@
 # Uncomment the required imports before adding the code
 
-# from django.shortcuts import render
-# from django.http import HttpResponseRedirect, HttpResponse
-# from django.contrib.auth.models import User
-# from django.shortcuts import get_object_or_404, render, redirect
-# from django.contrib.auth import logout
-# from django.contrib import messages
-# from datetime import datetime
+from django.shortcuts import render
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseBadRequest
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth import logout
+from django.contrib import messages
+from datetime import datetime
 
 from django.http import JsonResponse
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 import logging
 import json
 from django.views.decorators.csrf import csrf_exempt
-# from .populate import initiate
+from .populate import initiate
 
 
 # Get an instance of a logger
@@ -41,11 +41,66 @@ def login_user(request):
 # Create a `logout_request` view to handle sign out request
 # def logout_request(request):
 # ...
+def logout_request(request):
+    logout(request)
+    data = {"userName": ""} # Return empty username for SOME reason... 
+
+    return JsonResponse(data)
 
 # Create a `registration` view to handle sign up request
 # @csrf_exempt
 # def registration(request):
 # ...
+@csrf_exempt
+def register(request):
+    context = {}
+
+	# Load JSON data from the request body
+    data = json.loads(request.body)
+    try:
+        username = data['userName']
+        password = data['password']
+        email = data['email']
+    except:
+        # Returning json for failed request is bad. This is RESTful
+        return HttpResponseBadRequest("Missing required fields.")
+
+    first_name = None
+    if "firstName" in data:    
+        first_name = data['firstName']
+
+    last_name = None
+    if "lastName" in data: 
+        last_name = data['lastName']
+
+    username_exist = False
+    email_exist = False
+
+    if not username or not password or not email:
+        # Returning json for failed request is bad. This is RESTful
+        return HttpResponseBadRequest("Missing required fields.")
+
+    try:
+        # Check if user already exists
+        User.objects.get(username=username)
+        username_exist = True
+    except:
+        # If not, simply log this is a new user
+        logger.debug("{} is new user".format(username))
+
+    # If it is a new user
+    if not username_exist:
+        # Create user in auth_user table
+        user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name,password=password, email=email)
+        # Login the user and redirect to list page
+        login(request, user)
+        data = {"userName":username,"status":"Authenticated"}
+        return JsonResponse(data)
+    else:
+        # Ideally also use HTTP response code
+        data = {"userName":username,"error":"Already Registered"}
+        return JsonResponse(data)
+
 
 # # Update the `get_dealerships` view to render the index page with
 # a list of dealerships
