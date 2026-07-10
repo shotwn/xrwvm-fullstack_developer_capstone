@@ -125,9 +125,7 @@ app.post(
         .sort({ id: -1 })
         .select('id');
 
-      const newId = latestReview
-        ? latestReview.id + 1
-        : 1;
+      const newId = latestReview ? latestReview.id + 1 : 1;
 
       const review = new Reviews({
         id: newId,
