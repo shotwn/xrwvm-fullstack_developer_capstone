@@ -1,0 +1,2 @@
+(djangoenv) theia@theiadocker-anilhaksever:/home/project/xrwvm-fullstack_developer_capstone$ curl -X GET "https://anilhaksever-8000.theiadockernext-0-labs-prod-theiak8s-4-tor01.proxy.cognitiveclass.ai/djangoapp/dealer/15"
+{"status": 200, "dealer": {"_id": "6a5133d0df10fbaf5f326802", "id": 15, "city": "San Antonio", "state": "Texas", "address": "5057 Pankratz Hill", "zip": "78225", "lat": "29.3875", "long": "-98.5245", "short_name": "Tempsoft", "full_name": "Tempsoft Car Dealership", "__v": 0}}
